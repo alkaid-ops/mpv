@@ -966,16 +966,19 @@ endif
 
 drm = dependency('libdrm', version: '>= 2.4.114', required: get_option('drm'))
 libdisplay_info = dependency('libdisplay-info', version: '>= 0.1.1', required: get_option('drm'))
-features += {'drm': drm.found() and libdisplay_info.found() and
+libdrm_found = drm.found() and libdisplay_info.found()
+features += {'drm': libdrm_found and
              (features['vt.h'] or features['consio.h'] or features['wsdisplay-usl-io.h'])}
-if features['drm']
+if libdrm_found
     dependencies += [drm, libdisplay_info]
     sources += files('video/drmprime.c',
-                     'video/out/drm_atomic.c',
                      'video/out/drm_common.c',
                      'video/out/drm_prime.c',
                      'video/out/hwdec/hwdec_drmprime.c',
-                     'video/out/hwdec/hwdec_drmprime_overlay.c',
+                     'video/out/hwdec/hwdec_drmprime_overlay.c')
+endif
+if features['drm']
+    sources += files('video/out/drm_atomic.c',
                      'video/out/vo_drm.c')
 endif
 
